@@ -1,5 +1,6 @@
 ﻿using BigDataOrdersDashBoard_Veri_Analizi_Kursu_.Context;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BigDataOrdersDashBoard_Veri_Analizi_Kursu_.Controllers
 {
@@ -20,6 +21,7 @@ namespace BigDataOrdersDashBoard_Veri_Analizi_Kursu_.Controllers
             var products = _context.Products
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
+                .Include(p => p.Category)
                 .ToList();
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)_context.Products.Count() / pageSize);

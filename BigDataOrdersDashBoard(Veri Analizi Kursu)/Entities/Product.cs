@@ -19,5 +19,9 @@
         public string ProductImageUrl { get; set; }
 
         public string CountryOfOrigin { get; set; }
+
+        // Navigation properties
+
+        public List<OrderAll> Orders { get; set; }
     }
 }

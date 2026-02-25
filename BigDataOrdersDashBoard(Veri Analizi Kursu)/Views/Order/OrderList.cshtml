@@ -1,6 +1,6 @@
-﻿@model List<Product>
+﻿@model List<OrderAll>
 @{
-    ViewData["Title"] = "ProductList";
+    ViewData["Title"] = "OrderList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
 }
 
@@ -9,20 +9,20 @@
         <div class="row">
             <div class="col-lg-7 col-md-6 col-sm-12">
                 <h2>
-                    Ürün Listesi
-                    <small class="text-muted">Ürün işlemleri sayfası</small>
+                    Sipariş Listesi
+                    <small class="text-muted">Sipariş işlemleri sayfası</small>
                 </h2>
             </div>
             <div class="col-lg-5 col-md-6 col-sm-12">
                 <ul class="breadcrumb float-md-right">
-                    <li class="breadcrumb-item"><a href="index.html"><i class="zmdi zmdi-home"></i> Ürünler</a></li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0);">Ürün listesi</a></li>
+                    <li class="breadcrumb-item"><a href="index.html"><i class="zmdi zmdi-home"></i> Siparişler</a></li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0);">Sipariş listesi</a></li>
                     <li class="breadcrumb-item active">Anasayfa</li>
                 </ul>
             </div>
         </div>
     </div>
-  
+
     <div class="container-fluid">
         <div class="row clearfix">
             <div class="col-lg-12">
@@ -34,10 +34,13 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Ürün Adı</th>
+                                    <th>Müşteri Adı</th>
                                     <th>Birim Fiyat</th>
-                                    <th>Stok</th>
-                                    <th>Kategori</th>
-                                    <th>Menşei Ülke</th>
+                                    <th>Adet</th>
+                                    <th>Toplam Fiyat</th>
+                                    <th>Ödeme Yöntemi</th>
+                                    <th>Sipariş Durumu</th>
+                                    <th>Tarih</th>
                                     <th>Sil</th>
                                     <th>Güncelle</th>
                                 </tr>
@@ -46,17 +49,20 @@
                                 @foreach (var item in Model)
                                 {
                                     <tr>
-                                        <td>@item.ProductId</td>
-                                        <td>@item.ProductName</td>
-                                        <td>@item.UnitPrice €</td>
-                                        <td>@item.StockQuantity</td>
-                                        <td>@item.Category.CategoryName</td>
-                                        <td>@item.CountryOfOrigin</td>
+                                        <td>@item.OrderId</td>
+                                        <td>@item.Product.ProductName</td>
+                                        <td>@item.Customer.CustomerName @item.Customer.CustomerSurname</td>
+                                        <td>@item.Product.UnitPrice €</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@string.Format("{0:F2} €", item.Product.UnitPrice * item.Quantity)</td>
+                                        <td>@item.PaymentMethod</td>
+                                        <td>@item.OrderStatus</td>
+                                        <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
                                         <td>
-                                            <a href="/Product/DeleteProduct/@item.ProductId" class="btn btn-danger btn-sm">Sil</a>
+                                            <a href="/Order/DeleteOrder/@item.OrderId" class="btn btn-danger btn-sm">Sil</a>
                                         </td>
                                         <td>
-                                            <a href="/Product/UpdateProduct/@item.ProductId" class="btn btn-success btn-sm">Güncelle</a>
+                                            <a href="/Order/UpdateOrder/@item.OrderId" class="btn btn-success btn-sm">Güncelle</a>
                                         </td>
                                     </tr>
                                 }
@@ -70,7 +76,7 @@
                                     @if (ViewBag.CurrentPage > 1)
                                     {
                                         <li class="page-item">
-                                            <a class="page-link" href="/Product/ProductList?page=@(ViewBag.CurrentPage - 1)">Önceki</a>
+                                            <a class="page-link" href="/Order/OrderList?page=@(ViewBag.CurrentPage - 1)">Önceki</a>
                                         </li>
                                     }
 
@@ -81,7 +87,7 @@
                                         if (startPage > 1)
                                         {
                                             <li class="page-item">
-                                                <a class="page-link" href="/Product/ProductList?page=1">1</a>
+                                                <a class="page-link" href="/Order/OrderList?page=1">1</a>
                                             </li>
                                             if (startPage > 2)
                                             {
@@ -94,7 +100,7 @@
                                         for (int i = startPage; i <= endPage; i++)
                                         {
                                             <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                                                <a class="page-link" href="/Product/ProductList?page=@i">@i</a>
+                                                <a class="page-link" href="/Order/OrderList?page=@i">@i</a>
                                             </li>
                                         }
 
@@ -107,7 +113,7 @@
                                                 </li>
                                             }
                                             <li class="page-item">
-                                                <a class="page-link" href="/Product/ProductList?page=@ViewBag.TotalPages">@ViewBag.TotalPages</a>
+                                                <a class="page-link" href="/Order/OrderList?page=@ViewBag.TotalPages">@ViewBag.TotalPages</a>
                                             </li>
                                         }
                                     }
@@ -115,7 +121,7 @@
                                     @if (ViewBag.CurrentPage < ViewBag.TotalPages)
                                     {
                                         <li class="page-item">
-                                            <a class="page-link" href="/Product/ProductList?page=@(ViewBag.CurrentPage + 1)">Sonraki</a>
+                                            <a class="page-link" href="/Order/OrderList?page=@(ViewBag.CurrentPage + 1)">Sonraki</a>
                                         </li>
                                     }
 
@@ -126,7 +132,7 @@
 
 
                         <div class="text-center mt-4">
-                            <a href="/Product/CreateProduct/" class="btn btn-primary">Yeni Ürün Girişi</a>
+                            <a href="/Order/CreateOrder/" class="btn btn-primary">Yeni Sipariş Girişi</a>
                         </div>
 
                     </div>
